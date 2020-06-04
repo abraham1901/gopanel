@@ -6,12 +6,12 @@ from subprocess import Popen, check_output
 from flask import Flask, request, abort, redirect, jsonify, send_from_directory
 
 version = '0.1.0'
-etc = '/etc/gopanel'
+etc = os.path.dirname(os.path.abspath(__file__)) + '/etc'
 
 app = Flask(__name__)
 
-go_cmd = '/usr/bin/goaccess -a -g --real-time-html -p %s --port %d'
-go_info = '/usr/bin/goaccess -a -g -o json -p %s'
+go_cmd = '/usr/bin/goaccess -a --real-time-html -p %s --port %d --daemonize'
+go_info = '/usr/bin/goaccess -a -o json -p %s'
 
 go_state = {}  # dict of tuples { session: (pid,port) }
 
@@ -68,7 +68,7 @@ def info():
         if 'data' in data[k]:
             del data[k]['data']
     return jsonify(data)
-    
+
 def get_conf_var(conf, key, default=None):
     with open(conf) as f:
         data = f.read().splitlines()
