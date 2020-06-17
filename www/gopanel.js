@@ -18,7 +18,7 @@
                     $(item).click( function( e ) {
                         $.get('api/run', {'site':$(this).attr("id"),'session':Cookies.get('gopanel')}, function(rtn) {
                             if(rtn.go != undefined)
-                                window.location = "/gopanel/"+rtn.go;
+                                window.location = "/www/reports/"+rtn.go;
                             else console.log(Cookies.get('gopanel'), rtn);
                         });
                     });

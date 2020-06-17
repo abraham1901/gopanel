@@ -10,7 +10,7 @@ etc = os.path.dirname(os.path.abspath(__file__)) + '/etc'
 
 app = Flask(__name__)
 
-go_cmd = '/usr/bin/goaccess -a --real-time-html -p %s --port %d --daemonize'
+go_cmd = '/usr/bin/goaccess -a --real-time-html -p %s --port %d --persist --restore'
 go_info = '/usr/bin/goaccess -a -o json -p %s'
 
 go_state = {}  # dict of tuples { session: (pid,port) }
@@ -22,6 +22,8 @@ def sites():
     for conf in paths:
         name,_ = os.path.splitext(os.path.basename(conf))
         title = get_conf_var(conf, 'html-report-title', name)
+        port = get_conf_var(conf, 'port', 7890)
+        Popen(shlex.split(go_cmd % (conf, int(port))))
         sites[name] = title
     sess = request.args.get('session', None)
     if sess is None:
@@ -53,7 +55,7 @@ def run():
     except Exception as e:
         return jsonify({'error':'goaccess'})
     return jsonify({'go':os.path.basename(get_conf_var(conf, 'output-format'))})
-    
+
 @app.route('/info', methods=['GET'])
 def info():
     conf = etc+'/%s.conf' % request.args.get('site')
